@@ -3,6 +3,7 @@
 #include<vector>
 #include <windows.h>
 #include <random>
+#include <queue>
 using namespace std;
 string location;
 class node {
@@ -39,7 +40,7 @@ void read() {
 	edges.clear();
 	nodes.resize(n);
 	edges.resize(m);
-	for (int i = 0; i < n; i++) 
+	for (int i = 0; i < n; i++)
 		nodes[i] = new node(i);
 	for (int i = 0; i < m; i++) {
 		int from, to, cost;
@@ -59,6 +60,36 @@ void push() {
 	}
 	fout.close();
 }
+void reverseBFS(node* in, node *out) {
+	struct qwerty {
+		node* item=NULL;
+		int distance=0;
+	}crt;
+	vector <int> previous(nodes.size(), -1);
+	queue <qwerty>q;
+	previous[out->id] = 0;
+	q.push(qwerty{ out,0 });
+	while (!q.empty()) {
+		crt = q.front();
+		if (crt.item == in) {
+			cout <<"Lenght: "<< crt.distance << endl;
+			while (crt.item != out) {
+				cout << crt.item->id << "->";
+				crt.item = nodes[previous[crt.item->id]];
+			}
+			cout << crt.item->id << endl;
+			return;
+		}
+		q.pop();
+		for (int i = 0; i < crt.item->in.size(); i++) {
+			if (previous[crt.item->in[i]->id] == -1) {
+				previous[crt.item->in[i]->id] = crt.item->id;
+				q.push(qwerty{ crt.item->in[i],crt.distance + 1 });
+			}
+		}
+	}
+	cout << "No path" << endl;
+}
 void randomGraph() {
 	int n, m;
 	cin >> n >> m;
@@ -66,7 +97,7 @@ void randomGraph() {
 	edges.clear();
 	nodes.resize(n);
 	edges.resize(m);
-	for (int i = 0; i < n; i++) 
+	for (int i = 0; i < n; i++)
 		nodes[i] = new node(i);
 	for (int i = 0; i < m; i++) {
 		int from, to, cost;
@@ -90,6 +121,11 @@ int main() {
 	location += "\\storage.txt";
 	bool running = true;
 	while (running) {
+		cout << endl;
+		cout << endl;
+		cout << endl;
+		cout << endl;
+		cout << endl;
 		cout << "1. Read graph from file" << endl;
 		cout << "2. Push graph to file" << endl;
 		cout << "3. Generate random graph" << endl;
@@ -105,9 +141,15 @@ int main() {
 		cout << "13. Add edge" << endl;
 		cout << "14. Remove node" << endl;
 		cout << "15. Remove edge" << endl;
-		cout << "16. Exit" << endl;
+		cout << "16. Reverse BFS" << endl;
+		cout << "0. Exit" << endl;
 		int choice;
 		cin >> choice;
+		cout << endl;
+		cout << endl;
+		cout << endl;
+		cout << endl;
+		cout << endl;
 		switch (choice) {
 		case 1:
 			read();
@@ -229,9 +271,18 @@ int main() {
 				}
 			}
 			break;
-	
-		case 16:
+
+		case 0:
 			return 0;
+		case 16:
+			int fr,t;
+			cout << "Enter from:" << endl;
+			cin >> fr;
+			cout << "Enter to:" << endl;
+			cin >> t;
+			cout << endl;
+			reverseBFS(nodes[fr], nodes[t]);
+			break;
 		}
 	}
 	return 0;
