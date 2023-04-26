@@ -30,6 +30,8 @@ public:
 };
 vector <node*> nodes;
 vector <edge> edges;
+vector <node*> oldNodes;
+vector <edge> oldEdges;
 void read() {
 	ifstream fin;
 	fin.open(location);
@@ -62,6 +64,14 @@ void push() {
 void randomGraph() {
 	int n, m;
 	cin >> n >> m;
+	if (n < 0 || m < 0) {
+		cout << "Invalid input" << endl;
+		return;
+	}
+	if (m > n * n) {
+		cout << "Invalid input" << endl;
+		return;
+	}
 	nodes.clear();
 	edges.clear();
 	nodes.resize(n);
@@ -81,6 +91,7 @@ void randomGraph() {
 	}
 }
 int main() {
+	bool ok;
 	TCHAR buffer[1000] = { 0 };
 	GetModuleFileName(NULL, buffer, 1000);
 	location = string(buffer);
@@ -90,6 +101,9 @@ int main() {
 	location += "\\storage.txt";
 	bool running = true;
 	while (running) {
+		cout << endl;
+		cout << endl;
+		cout << endl;
 		cout << "1. Read graph from file" << endl;
 		cout << "2. Push graph to file" << endl;
 		cout << "3. Generate random graph" << endl;
@@ -105,9 +119,15 @@ int main() {
 		cout << "13. Add edge" << endl;
 		cout << "14. Remove node" << endl;
 		cout << "15. Remove edge" << endl;
-		cout << "16. Exit" << endl;
+		cout << "16. Copy graph" << endl;
+		cout << "17. Restore graph" << endl;
+		cout << "0. Exit" << endl;
 		int choice;
 		cin >> choice;
+		cout << endl;
+		cout << endl;
+		cout << endl;
+		cout << endl;
 		switch (choice) {
 		case 1:
 			read();
@@ -126,55 +146,71 @@ int main() {
 			break;
 		case 6:
 			int id;
+			cout << "Enter node id: ";
 			cin >> id;
-			for (int i = 0; i < nodes[id]->in.size(); i++) {
+			for (int i = 0; i < nodes[id]->in.size(); i++) 
 				cout << nodes[id]->in[i]->id << " ";
-			}
 			cout << endl;
 			break;
 		case 7:
+			cout << "Enter node id: ";
 			cin >> id;
-			for (int i = 0; i < nodes[id]->out.size(); i++) {
+			for (int i = 0; i < nodes[id]->out.size(); i++)
 				cout << nodes[id]->out[i]->id << " ";
-			}
 			cout << endl;
 			break;
 		case 8:
 			int from, to;
+			cout << "Enter from and to: ";
 			cin >> from >> to;
+			ok = true;
 			for (int i = 0; i < edges.size(); i++) {
 				if (edges[i].from->id == from && edges[i].to->id == to) {
 					cout << edges[i].cost << endl;
+					ok = false;
 					break;
 				}
 			}
-			cout << "Not found" << endl;
+			if (ok)
+				cout << "Not found" << endl;
 			break;
 		case 9:
+			cout << "Enter from and to: ";
 			cin >> from >> to;
 			int cost;
+			cout << "Enter cost: ";
 			cin >> cost;
+			ok = true;
 			for (int i = 0; i < edges.size(); i++) {
 				if (edges[i].from->id == from && edges[i].to->id == to) {
 					edges[i].cost = cost;
+					ok = false;
 					break;
 				}
 			}
-			cout << "Not found" << endl;
+			if (ok)
+				cout << "Not found" << endl;
 			break;
 		case 10:
+			cout << "Enter node id: ";
 			cin >> id;
 			cout << nodes[id]->in.size() << endl;
 			break;
 		case 11:
+			cout << "Enter node id: ";
 			cin >> id;
 			cout << nodes[id]->out.size() << endl;
 			break;
 		case 12:
+			cout << "Enter node id: ";
+			cin >> id;
 			nodes.push_back(new node(nodes.size()));
+			nodes[nodes.size() - 1]->id = id;
 			break;
 		case 13:
+			cout << "Enter from and to: ";
 			cin >> from >> to;
+			for (int i=0;i<nodes[to]->in.size();)
 			edges.push_back(edge());
 			edges[edges.size() - 1].from = nodes[from];
 			edges[edges.size() - 1].to = nodes[to];
@@ -182,6 +218,7 @@ int main() {
 			nodes[to]->in.push_back(nodes[from]);
 			break;
 		case 14:
+			cout << "Enter node id: ";
 			cin >> id;
 			for (int i = 0; i < edges.size(); i++) {
 				if (edges[i].from->id == id || edges[i].to->id == id) {
@@ -209,6 +246,7 @@ int main() {
 			}
 			break;
 		case 15:
+			cout << "Enter from and to: ";
 			cin >> from >> to;
 			for (int i = 0; i < edges.size(); i++) {
 				if (edges[i].from->id == from && edges[i].to->id == to) {
@@ -229,8 +267,15 @@ int main() {
 				}
 			}
 			break;
-	
 		case 16:
+			oldEdges=edges;
+			oldNodes=nodes;
+			break;
+		case 17:
+			edges=oldEdges;
+			nodes=oldNodes;
+			break;
+		case 0:
 			return 0;
 		}
 	}
