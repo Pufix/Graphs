@@ -90,6 +90,49 @@ void reverseBFS(node* in, node *out) {
 	}
 	cout << "No path" << endl;
 }
+void dijkstra(node *from, node *to) {
+	
+	struct qwerty {
+		node* item=NULL;
+		int distance=0;
+		node* previous = NULL;
+	}crt;
+	vector<int>costs(nodes.size(), 2147483647);
+	vector<int>previous(nodes.size(), -1);
+	queue <qwerty>q;
+	q.push(qwerty{ from,0,NULL });
+	while (!q.empty()) {
+		crt = q.front();
+		q.pop();
+		if (costs[crt.item->id] > crt.distance) {
+			costs[crt.item->id] = crt.distance;
+			if(crt.previous!=NULL)
+				previous[crt.item->id] = crt.previous->id;
+			for (int i = 0; i < crt.item->out.size(); i++) {
+				int cost;
+				for (int j = 0; j < edges.size(); j++) {
+					if (edges[j].from == crt.item && edges[j].to == crt.item->out[i]) {
+						cost = edges[j].cost;
+						break;
+					}
+				}
+
+				q.push(qwerty{ crt.item->out[i],crt.distance +cost,crt.item});
+			}
+		}
+	}
+	if (costs[to->id] == 2147483647) {
+		cout << "No path" << endl;
+		return;
+	}
+	cout << "Lenght: " << costs[to->id] << endl;
+	node * crtNode = to;
+	while (crtNode != from) {
+		cout << crtNode->id << "<-";
+		crtNode = nodes[previous[crtNode->id]];
+	}
+	cout << from->id << endl;
+}
 void randomGraph() {
 	int n, m;
 	cin >> n >> m;
@@ -142,6 +185,7 @@ int main() {
 		cout << "14. Remove node" << endl;
 		cout << "15. Remove edge" << endl;
 		cout << "16. Reverse BFS" << endl;
+		cout << "17. Dijkstra" << endl;
 		cout << "0. Exit" << endl;
 		int choice;
 		cin >> choice;
@@ -282,6 +326,15 @@ int main() {
 			cin >> t;
 			cout << endl;
 			reverseBFS(nodes[fr], nodes[t]);
+			break;
+		case 17:
+			int fro, tom;
+			cout << "Enter from:" << endl;
+			cin >> fro;
+			cout << "Enter to:" << endl;
+			cin >> tom;
+			cout << endl;
+			dijkstra(nodes[fro], nodes[tom]);
 			break;
 		}
 	}
